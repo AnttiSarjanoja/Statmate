@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="UTF-8"> 
+	<title>StatMate</title>
+	<style type="text/css">
+		input { width: 40px; }
+	</style>
+	<script type="text/javascript">
+		var races = [
+			["dwarf"   , [8,18, 3,17, 11,18, 3,18, 3,18, 4,17]],
+			["elf"     , [3,18, 6,18,  9,18, 8,18, 3,18, 8,18]],
+			["gnome"   , [6,18, 3,18,  8,18, 7,18, 3,18, 3,18]],
+			["half-elf", [3,18, 6,18,  6,18, 4,18, 3,18, 3,18]],
+			["halfling", [7,18, 7,18, 10,18, 6,18, 3,17, 3,18]],
+			["half-orc", [5,17, 3,17, 12,18, 3,17, 3,14, 5,14]]
+		];
+		var classes = [
+			["assassin"   , [12, 12,  6, 11,  6,  0], [-1,  0, 0,  0,  0,  0]],
+			["cleric"     , [ 6,  3,  6,  6,  9,  6], [ 0,  0, 0,  0, 16,  0]],
+			["druid"      , [ 6,  6,  6,  6, 12, 15], [ 0,  0, 0,  0, 16, 16]],
+			["fighter"    , [ 9,  6,  7,  3,  6,  6], [16,  0, 0,  0,  0,  0]],
+			["illusionist", [ 6, 16,  0, 15,  6,  6], [-1,  0, 0,  0,  0,  0]],
+			["magic user" , [ 3,  6,  6,  9,  6,  6], [ 0,  0, 0, 16,  0,  0]],
+			["paladin"    , [12,  6,  9,  9, 13, 17], [16,  0, 0,  0, 16,  0]],
+			["ranger"     , [13,  6, 14, 13, 14,  6], [16,  0, 0, 16, 16,  0]],
+			["thief"      , [ 6,  9,  6,  6,  6,  6], [ 0, 16, 0,  0,  0,  0]]
+		];
+	</script>
+</head>
+
+<body>
+	<pre>
+		StatMate for Osric chargen.
+		Enter stats to see viable race / class options.
+		! means exp bonus for class.
+		Anything with brackets are missing (at least) one physical +1 attr (could get from race++).
+		NOTE: Validate limits manually, may contain typos.
+	</pre>
+	<table>
+		<tr>
+			<td>Str</td>
+			<td>Dex</td>
+			<td>Con</td>
+			<td>Int</td>
+			<td>Wis</td>
+			<td>Cha</td>
+			<td></td>
+		</tr>
+  <tr>
+    <td>
+    	<input id="str1" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="dex1" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="con1" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="int1" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="wis1" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="cha1" type="number" min="3" max="18"/>
+    </td>
+    <td id="row1"></td>
+  </tr>
+  <tr>
+    <td>
+    	<input id="str2" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="dex2" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="con2" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="int2" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="wis2" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="cha2" type="number" min="3" max="18"/>
+    </td>
+    <td id="row2"></td>
+  </tr>
+  <tr>
+    <td>
+    	<input id="str3" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="dex3" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="con3" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="int3" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="wis3" type="number" min="3" max="18"/>
+    </td>
+    <td>
+    	<input id="cha3" type="number" min="3" max="18"/>
+    </td>
+    <td id="row3"></td>
+  </tr>
+  </table>
+   <input type="button" onclick="getOpts()" value="Get">
+  
+	<noscript>Please enable javascript!</noscript>
+	<script type="text/javascript">
+		var getOpts = () => {
+			var a = [1,2,3].map((v, i) => ["str","dex","con","int","wis","cha"].map(vv => document.getElementById(vv.concat(v)).value));
+			var bracketify = (s) => "(" + s + ")";
+			a.forEach((v, i) => { document.getElementById("row".concat(i + 1)).innerHTML = !v.some(vv => vv === "" || isNaN(vv))
+				? "Races: " + races.filter(r => v.every((vv, ii) => vv >= r[1][ii * 2] && vv <= r[1][(ii * 2) + 1])).map(r => r[0]).concat(["human"]).join(", ") + " | " +
+					"Classes: " + classes.filter(c => v.every((vv, ii) => vv >= c[1][ii] - (ii < 3 ? 1 : 0))).map(c => (v.some((vv, ii) => (ii < 3 && vv == (c[1][ii] - 1))) ? bracketify(c[0]) : c[0]) + (v.every((vv, ii) => c[2][ii] !== -1 && vv >= c[2][ii]) ? "!" : v.every((vv, ii) => c[2][ii] !== -1 && vv >= c[2][ii] - (ii < 3 ? 1 : 0)) ? "(!)" : "")).join(", ")
+				: "Invalid input"; });
+		};
+	</script>
+</body>
+</html>
